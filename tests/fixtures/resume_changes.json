@@ -1,0 +1,10 @@
+{
+  "changes": [
+    {
+      "change": "Placed the verified backend summary and Python skills before experience.",
+      "reason": "Surface the strongest existing evidence for the role without adding claims.",
+      "jd_requirement": "Build reliable Python backend services.",
+      "source_evidence": ["fact.backend", "fact.python", "exp.api"]
+    }
+  ]
+}

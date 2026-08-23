@@ -1,0 +1,81 @@
+{
+  "candidate": {
+    "name": "Casey Example",
+    "location": "Austin, TX",
+    "email": "casey@example.test",
+    "phone": "+1 555 010 0200",
+    "linkedin": "linkedin.com/in/casey-example",
+    "github": "github.com/casey-example",
+    "portfolio": "casey.example.test"
+  },
+  "evidence": {
+    "contact.identity": "The verified base resume identifies the candidate as Casey Example.",
+    "fact.backend": "The verified base resume states that the candidate builds backend services.",
+    "fact.python": "Python appears in the verified base-resume skills section.",
+    "fact.sql": "SQL appears in the verified base-resume skills section.",
+    "fact.aws": "AWS appears in the verified base-resume skills section.",
+    "exp.acme": "The verified base resume lists employment at Acme Product Labs from 2022 to Present.",
+    "exp.api": "A verified base-resume bullet states that the candidate built Python APIs for a customer workflow.",
+    "exp.reliability": "A verified base-resume bullet states that the candidate added tests and operational dashboards.",
+    "project.queue": "The verified base resume lists a queue-processing project.",
+    "project.queue.detail": "A verified project bullet describes idempotent processing and retry handling.",
+    "education.bs": "The verified base resume lists a Bachelor of Science in Computer Science from Example University."
+  },
+  "summary": [
+    {
+      "text": "Backend software engineer focused on reliable product services and cloud delivery.",
+      "source_ids": ["fact.backend", "fact.aws"]
+    }
+  ],
+  "skills": {
+    "Languages": [
+      {"text": "Python", "source_ids": ["fact.python"]},
+      {"text": "SQL", "source_ids": ["fact.sql"]}
+    ],
+    "Cloud": [
+      {"text": "AWS", "source_ids": ["fact.aws"]}
+    ]
+  },
+  "experience": [
+    {
+      "company": "Acme Product Labs",
+      "role": "Software Engineer",
+      "location": "Austin, TX",
+      "start": "2022",
+      "end": "Present",
+      "source_ids": ["exp.acme"],
+      "bullets": [
+        {
+          "text": "Built Python APIs supporting a customer-facing workflow.",
+          "source_ids": ["exp.api"]
+        },
+        {
+          "text": "Added automated tests and operational dashboards for service reliability.",
+          "source_ids": ["exp.reliability"]
+        }
+      ]
+    }
+  ],
+  "projects": [
+    {
+      "name": "Queue Processing Service",
+      "source_ids": ["project.queue"],
+      "bullets": [
+        {
+          "text": "Implemented idempotent processing and explicit retry handling.",
+          "source_ids": ["project.queue.detail"]
+        }
+      ]
+    }
+  ],
+  "education": [
+    {
+      "institution": "Example University",
+      "degree": "Bachelor of Science in Computer Science",
+      "end": "2022",
+      "source_ids": ["education.bs"],
+      "bullets": []
+    }
+  ],
+  "certifications": []
+}

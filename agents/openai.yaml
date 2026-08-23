@@ -1,0 +1,5 @@
+interface:
+  display_name: "LinkedIn Job Search Pipeline"
+  short_description: "Run a truthful, interview-focused job search"
+  brand_color: "#0A66C2"
+  default_prompt: "Use $linkedin-job-search-pipeline to initialize my job-search workspace from my base resume."

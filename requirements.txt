@@ -1,0 +1,3 @@
+# PDF generation and the text-bounds fallback used by resume_qa.py.
+reportlab>=4,<5
+pdfplumber>=0.11,<1

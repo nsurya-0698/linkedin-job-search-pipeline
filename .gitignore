@@ -1,0 +1,22 @@
+.DS_Store
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.coverage
+htmlcov/
+.venv/
+dist/
+build/
+*.egg-info/
+
+# Operational state belongs in an external campaign workspace.
+campaigns/
+private/
+tmp/
+output/
+
+# Never commit generated or source resumes from an accidental local data folder.
+data/resumes/base/*
+!data/resumes/base/.gitkeep
+data/resumes/tailored/*
+!data/resumes/tailored/.gitkeep

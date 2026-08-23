@@ -1,0 +1,13 @@
+{
+  "campaign_id": "",
+  "campaign_name": "",
+  "created_at": "",
+  "schema_version": "1.0",
+  "strategy": {
+    "company_stage": "LARGE_PRODUCT_COMPANIES_FIRST",
+    "minimum_match_score": 50,
+    "priority_score_range": "0-100 (separate from match relevance)",
+    "remote_first": true,
+    "maximum_explicit_required_years": 5
+  }
+}

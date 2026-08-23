@@ -1,0 +1,4 @@
+# Runtime campaign workspaces contain PII and job-search history.
+# Fail closed: ignore every generated or populated file by default.
+*
+!.gitignore
