@@ -20,6 +20,7 @@ from _common import (
     PipelineError,
     atomic_write_text,
     boolish,
+    contact_priority_tier,
     csv_path,
     number,
     parse_iso_date,
@@ -303,11 +304,14 @@ def build_report(workspace: Path, *, as_of: date, stale_days: int, top_n: int) -
         "contacts_discovered": len(contacts),
         "recruiters": _count(
             contacts,
-            lambda row: "recruit" in f"{row['relationship_type']} {row['title']}".lower(),
+            lambda row: contact_priority_tier(row) == "RECRUITER",
         ),
         "hiring_managers": _count(
             contacts,
-            lambda row: row["relationship_type"].upper() == "HIRING_MANAGER",
+            lambda row: contact_priority_tier(row) == "HIRING_MANAGER",
+        ),
+        "other_contacts": _count(
+            contacts, lambda row: contact_priority_tier(row) == "OTHER"
         ),
         "engineering_leaders": _count(
             contacts,

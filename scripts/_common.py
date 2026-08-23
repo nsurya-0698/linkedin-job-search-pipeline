@@ -537,6 +537,36 @@ def priority_for_score(score: float | None) -> str:
     return "DO_NOT_APPLY"
 
 
+RECRUITER_CONTACT_TERMS = (
+    "recruit",
+    "talent acquisition",
+    "talent partner",
+    "sourcer",
+    "sourcing",
+    "staffing",
+)
+
+
+def contact_priority_tier(row: Mapping[str, str]) -> str:
+    """Classify a contact using the campaign's strict outreach hierarchy."""
+    relationship = row.get("relationship_type", "").strip().upper()
+    searchable = f"{relationship} {row.get('title', '')}".lower()
+    if relationship == "RECRUITER" or any(
+        term in searchable for term in RECRUITER_CONTACT_TERMS
+    ):
+        return "RECRUITER"
+    if relationship == "HIRING_MANAGER":
+        return "HIRING_MANAGER"
+    return "OTHER"
+
+
+def contact_priority_rank(row: Mapping[str, str]) -> int:
+    """Return a stable sort rank: recruiters, hiring managers, then others."""
+    return {"RECRUITER": 1, "HIRING_MANAGER": 2, "OTHER": 3}[
+        contact_priority_tier(row)
+    ]
+
+
 def require_choice(value: str, choices: Sequence[str], label: str) -> str:
     normalized = value.strip().upper()
     mapping = {choice.upper(): choice for choice in choices}

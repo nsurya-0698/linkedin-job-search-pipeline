@@ -26,6 +26,8 @@ from _common import (  # noqa: E402
     JOBS_FIELDS,
     PipelineError,
     atomic_write_csv,
+    contact_priority_rank,
+    contact_priority_tier,
     empty_row,
     read_csv_checked,
 )
@@ -201,6 +203,19 @@ class HelpAndWorkspaceTests(PipelineTestCase):
         )
         self.assertIn("outside the installed skill", completed.stderr)
         self.assertFalse(destination.exists())
+
+    def test_contact_priority_is_recruiter_then_hiring_manager_then_other(self) -> None:
+        contacts = [
+            {"relationship_type": "TECHNICAL_LEADER", "title": "Staff Engineer"},
+            {"relationship_type": "HIRING_MANAGER", "title": "Engineering Manager"},
+            {"relationship_type": "OTHER", "title": "Talent Acquisition Partner"},
+            {"relationship_type": "RECRUITER", "title": "Agency Recruiter"},
+        ]
+        ordered = sorted(contacts, key=contact_priority_rank)
+        self.assertEqual(
+            [contact_priority_tier(row) for row in ordered],
+            ["RECRUITER", "RECRUITER", "HIRING_MANAGER", "OTHER"],
+        )
 
     def test_portable_setup_installs_skill_and_imports_resume(self) -> None:
         codex_home = self.temp / "codex-home"

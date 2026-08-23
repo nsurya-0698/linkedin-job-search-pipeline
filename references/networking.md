@@ -4,13 +4,15 @@ Optimize for relevant professional relationships, not connection count. Networki
 
 ## Contact Priority
 
-Prioritize people who can provide credible role or team context:
+Use this strict hierarchy for every contact search, shortlist, and outreach batch:
 
-1. hiring managers and engineering managers for a target team;
-2. directors or technical leaders connected to the work;
-3. recruiters responsible for the job family or geography;
-4. staff, principal, senior, or other relevant engineers;
-5. employees with genuine technical or professional overlap.
+1. **Recruiters:** corporate, technical, agency, staffing, talent-acquisition, and sourcing professionals with credible job, company, role-family, or geographic relevance.
+2. **Hiring managers:** confirmed or strongly evidenced managers for the relevant role, team, or job family.
+3. **Other relevant professionals:** directors, technical leaders, staff/principal/senior engineers, and employees with genuine technical or company overlap.
+
+Fill the requested batch from recruiters first. Move to hiring managers only when there are not enough eligible recruiters, and move to other professionals only when the first two tiers are insufficient. A lower-tier contact must not displace an eligible higher-tier contact. When presenting a lower-tier contact, state why the higher tiers were insufficient.
+
+Relevance is still mandatory. Do not select an unrelated recruiter merely to satisfy the hierarchy or inflate connection volume.
 
 Do not target people solely because they are senior or highly visible.
 
@@ -25,7 +27,7 @@ Score each dimension from 0 to 5 and preserve the evidence:
 - personalization evidence;
 - plausible mutual professional value.
 
-Weight target-team and hiring relevance twice. Rank contacts within a specific job/company context; a global “best contacts” list is less useful.
+Apply the strict tier hierarchy before comparing scores. Within the same tier, weight target-team and hiring relevance twice. Rank contacts within a specific job/company context; a global “best contacts” list is less useful.
 
 Store name, title, company, verified profile URL, contact category, why relevant, related job, factual personalization point, connection status, last contact, next follow-up, response status, and source date.
 

@@ -11,6 +11,7 @@ Clone this repository on any laptop, run one setup command, provide the candidat
 - Separates meaningful resume relevance from opportunity priority.
 - Creates versioned, ATS-friendly tailored resumes with PDF text and render QA.
 - Prepares relationship-focused LinkedIn outreach drafts and interview packets.
+- Prioritizes relevant recruiters first, hiring managers second, and other professional contacts last in every networking batch.
 - Tracks companies, jobs, contacts, applications, follow-ups, stages, and outcomes.
 - Requires explicit approval before any LinkedIn message or application submission.
 
@@ -110,6 +111,8 @@ The skill supports three modes:
 - **Research:** read, verify, score, and report without external side effects.
 - **Preparation:** create local drafts, trackers, tailored PDFs, and interview materials.
 - **Execution:** send or submit only after approval for the exact action.
+
+Networking batches follow a strict contact hierarchy: eligible recruiters first, hiring managers second, and other relevant professionals only when the higher tiers cannot fill the batch. Relevance and truthful personalization remain prerequisites at every tier.
 
 ## Privacy Model
 

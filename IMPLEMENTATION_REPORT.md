@@ -37,6 +37,7 @@ Key invariants:
 - Base resumes are immutable; tailored files are versioned and never overwritten.
 - Submitted resume attribution and the highest interview stage are preserved after later status changes.
 - Duplicate source rows remain auditable, while only the canonical job can have an application.
+- Networking selection uses a strict hierarchy: eligible recruiters first, hiring managers second, and other relevant professionals only after both higher tiers are insufficient.
 
 ## Supported Commands
 
