@@ -39,6 +39,8 @@ Before evaluating jobs:
 
 The external campaign workspace's `data/candidate-profile.md` is the candidate-specific source of truth created from supplied sources. Its unresolved items remain blockers for dependent actions. Initialize a fresh profile for a different candidate rather than reusing another person's state.
 
+When the candidate is the repository owner, Surya Teja Nammi, read and apply [references/owner-preferences.md](references/owner-preferences.md). Confirm identity before using those personal defaults, and never apply them to another candidate automatically.
+
 ## Run the Campaign
 
 Use this sequence for each discovery batch:

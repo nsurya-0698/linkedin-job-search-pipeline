@@ -141,6 +141,18 @@ class PipelineTestCase(unittest.TestCase):
 
 
 class HelpAndWorkspaceTests(PipelineTestCase):
+    def test_owner_preferences_are_opt_in_and_preserve_search_constraints(self) -> None:
+        preferences = (SKILL_ROOT / "references" / "owner-preferences.md").read_text(
+            encoding="utf-8"
+        )
+        self.assertIn("only when the candidate confirms", preferences)
+        self.assertIn("H-1B", preferences)
+        self.assertIn("Amazon", preferences)
+        self.assertIn("more than five years", preferences)
+        self.assertIn("recruiters first", preferences)
+        skill = (SKILL_ROOT / "SKILL.md").read_text(encoding="utf-8")
+        self.assertIn("references/owner-preferences.md", skill)
+
     def test_every_required_cli_has_help(self) -> None:
         for script in (
             "setup_skill.py",

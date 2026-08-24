@@ -13,7 +13,7 @@ The package contains:
 - `SKILL.md`: invocation contract, modes, initialization, workflow, routing, and authorization boundaries.
 - `README.md`: portable clone, prerequisite, setup, upgrade, privacy, and usage guide.
 - `agents/openai.yaml`: skill-list metadata and default invocation prompt.
-- `references/`: scoring, resume, networking, sponsorship, application, interview, metrics, and search methodology.
+- `references/`: scoring, resume, networking, sponsorship, application, interview, metrics, search methodology, and opt-in repository-owner search preferences.
 - `scripts/`: the six required workflow CLIs, a portable setup CLI, and a shared schema and atomic-I/O module.
 - `assets/workspace-template/`: sanitized campaign metadata, candidate/search templates, tracker schemas, resume input example, interview tracker, report folder, and fail-closed runtime `.gitignore`.
 - `tests/`: offline fixtures and integration tests covering initialization, tracking, gates, deduplication, reporting, truthful/versioned PDF generation, and QA.

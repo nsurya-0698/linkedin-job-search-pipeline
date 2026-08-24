@@ -14,6 +14,7 @@ Clone this repository on any laptop, run one setup command, provide the candidat
 - Prioritizes relevant recruiters first, hiring managers second, and other professional contacts last in every networking batch.
 - Tracks companies, jobs, contacts, applications, follow-ups, stages, and outcomes.
 - Requires explicit approval before any LinkedIn message or application submission.
+- Includes opt-in repository-owner search preferences without bundling the owner's resume or campaign history.
 
 ## Portable Quick Start
 
@@ -118,6 +119,8 @@ Networking batches follow a strict contact hierarchy: eligible recruiters first,
 
 The GitHub repository contains only skill code, sanitized templates, tests, documentation, and fixtures. It must not contain real resumes, contact data, immigration answers, salary expectations, job history, applications, or generated tailored resumes.
 
+The repository does contain an explicitly authorized, opt-in owner-preferences reference for Surya's portable search constraints. It is used only after confirming the campaign belongs to Surya and is never inherited by another candidate. The source resume and detailed career record remain private.
+
 Every initialized campaign workspace receives a fail-closed `.gitignore`:
 
 ```gitignore
@@ -146,6 +149,7 @@ linkedin-job-search-pipeline/
 │   ├── job-scoring.md
 │   ├── metrics-and-feedback.md
 │   ├── networking.md
+│   ├── owner-preferences.md
 │   ├── resume-tailoring.md
 │   ├── search-strategy.md
 │   └── sponsorship.md
