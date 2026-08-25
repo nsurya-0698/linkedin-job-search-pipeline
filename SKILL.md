@@ -54,8 +54,9 @@ Use this sequence for each discovery batch:
 7. **Rank:** maintain Top 10, Next 20, and Backup 20 queues for the initial approximately 50-role campaign.
 8. **Prepare:** only for user-selected eligible roles, create a minimal truthful resume version, application packet, outreach drafts, and interview topics.
 9. **Prioritize contacts:** for every networking batch, select eligible recruiters first, hiring managers second, and other relevant professionals only after both higher tiers are insufficient. Do not let a lower-tier contact displace an eligible higher-tier contact.
-10. **Approve and execute:** present exactly what would be transmitted and wait for approval before the external action.
-11. **Record and learn:** update company, contact, application, follow-up, stage, and outcome data; identify the current funnel bottleneck.
+10. **Apply owner outreach credential:** when the confirmed candidate is Surya Teja Nammi, every first-contact LinkedIn connection note must state near the beginning that he currently works at Oracle. Use the verified public title from the runtime candidate profile when space permits, retain recipient-specific personalization, and never invent an Oracle team, tenure, or accomplishment.
+11. **Approve and execute:** present exactly what would be transmitted and wait for approval before the external action.
+12. **Record and learn:** update company, contact, application, follow-up, stage, and outcome data; identify the current funnel bottleneck.
 
 ## Load Only the Relevant Guidance
 

@@ -12,6 +12,7 @@ Clone this repository on any laptop, run one setup command, provide the candidat
 - Creates versioned, ATS-friendly tailored resumes with PDF text and render QA.
 - Prepares relationship-focused LinkedIn outreach drafts and interview packets.
 - Prioritizes relevant recruiters first, hiring managers second, and other professional contacts last in every networking batch.
+- For the confirmed repository owner, prominently states current Oracle employment in every first-contact LinkedIn connection note while preserving truthful recipient-specific personalization.
 - Tracks companies, jobs, contacts, applications, follow-ups, stages, and outcomes.
 - Requires explicit approval before any LinkedIn message or application submission.
 - Includes opt-in repository-owner search preferences without bundling the owner's resume or campaign history.

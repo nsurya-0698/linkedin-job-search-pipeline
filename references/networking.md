@@ -58,6 +58,19 @@ A good draft normally contains:
 
 Do not mass-produce near-identical messages. If no honest personalization point exists, recommend following the person or engaging with relevant public work before requesting time.
 
+## Oracle Credential for the Repository Owner
+
+When the candidate is confirmed as Surya Teja Nammi, give his current Oracle employment high weight in every first-contact LinkedIn connection note:
+
+- state near the beginning that he currently works at Oracle;
+- use the verified public title from the runtime candidate profile when it fits naturally;
+- keep a separate, recipient-specific reason for connecting;
+- prefer a concise construction such as “I’m currently a Generative AI Engineer at Oracle...” only while that title and employer remain verified;
+- do not invent or imply an Oracle team, tenure, project, achievement, hiring relationship, or endorsement; and
+- if the current employer or title is unresolved or stale, pause and reconfirm it before drafting or sending.
+
+This owner-specific rule increases the prominence of a verified credential; it does not relax personalization, truthfulness, platform-limit, or approval requirements. Do not apply it to another candidate automatically.
+
 ## Approval and Follow-Up
 
 Before sending, show the exact recipient, message, linked job/company, and any personal data being transmitted. Obtain explicit approval for that message. Respect platform limits and do not bypass CAPTCHAs or anti-automation controls.

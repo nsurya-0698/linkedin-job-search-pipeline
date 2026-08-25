@@ -150,8 +150,18 @@ class HelpAndWorkspaceTests(PipelineTestCase):
         self.assertIn("Amazon", preferences)
         self.assertIn("more than five years", preferences)
         self.assertIn("recruiters first", preferences)
+        self.assertIn("currently works at Oracle", preferences)
+        self.assertIn("every first-contact LinkedIn connection note", preferences)
         skill = (SKILL_ROOT / "SKILL.md").read_text(encoding="utf-8")
         self.assertIn("references/owner-preferences.md", skill)
+        self.assertIn("currently works at Oracle", skill)
+
+        networking = (SKILL_ROOT / "references" / "networking.md").read_text(
+            encoding="utf-8"
+        )
+        self.assertIn("Oracle Credential for the Repository Owner", networking)
+        self.assertIn("recipient-specific reason", networking)
+        self.assertIn("do not invent or imply an Oracle team", networking)
 
     def test_every_required_cli_has_help(self) -> None:
         for script in (
