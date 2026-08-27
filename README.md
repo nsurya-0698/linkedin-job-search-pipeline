@@ -2,7 +2,7 @@
 
 A portable Codex skill for running a persistent, evidence-based job search from a verified base resume—without turning LinkedIn into a mass-automation project.
 
-Clone this repository on any laptop, run one setup command, provide the candidate's resume, and invoke `$linkedin-job-search-pipeline` in Codex.
+Clone this repository on any laptop, run one setup command, provide the candidate's resume, and invoke either `$linkedin-job-search-pipeline` or the end-to-end `$target-company-job-campaign` orchestrator in Codex.
 
 ## What It Does
 
@@ -15,7 +15,49 @@ Clone this repository on any laptop, run one setup command, provide the candidat
 - For the confirmed repository owner, prominently states current Oracle employment in every first-contact LinkedIn connection note while preserving truthful recipient-specific personalization.
 - Tracks companies, jobs, contacts, applications, follow-ups, stages, and outcomes.
 - Requires explicit approval before any LinkedIn message or application submission.
-- Includes opt-in repository-owner search preferences without bundling the owner's resume or campaign history.
+- Includes opt-in repository-owner search preferences and the owner-approved reference resume used as a formatting asset; runtime campaign history remains private.
+- Installs a separate target-company skill that runs focused campaigns across 2–3 companies while reusing the same private knowledge base.
+
+## Target Company Campaign Skill
+
+`$target-company-job-campaign` is the simplest entry point when you want the complete workflow. It:
+
+1. selects or accepts 2–3 target companies;
+2. finds, verifies, gates, scores, and ranks suitable roles;
+3. waits for your role confirmation;
+4. creates and checks job-specific two-page PDF resumes;
+5. waits for your resume approval;
+6. prepares applications and waits for final submission approval;
+7. submits the approved applications;
+8. finds recruiters first and hiring managers second;
+9. drafts LinkedIn outreach and verified-address email referencing the submitted position;
+10. waits for exact send approval, sends approved outreach, and updates the campaign report.
+
+Research and local preparation continue automatically when the evidence is sufficient. The skill pauses at consequential approval checkpoints; choosing the skill never grants standing permission to submit applications or contact people.
+
+## Owner Resume Standard
+
+The owner-approved reference is `assets/reference/SuryaResume-reference.pdf`. New owner resumes preserve its two-page structure, section order, date alignment, hierarchy, and spacing while tailoring only evidence-backed content.
+
+Every portal upload is named `SuryaResume.pdf` and stored by application identity:
+
+```text
+<output-root>/YYYY-MM-DD/company-name/job-id-role-name/
+├── SuryaResume.pdf
+└── resume.metadata.json
+```
+
+Every generated owner resume must include a tailored professional summary, substantially filled pages, clickable LinkedIn/Portfolio/certification labels, selectable ATS text, and visual QA of both pages.
+
+```bash
+python3 scripts/reference_resume_renderer.py \
+  --source /path/to/evidence-backed-resume.json \
+  --output-root /path/to/resumes \
+  --date 2026-08-25 \
+  --company Apple \
+  --job-id 200678449-3337 \
+  --role "Software Engineer"
+```
 
 ## Portable Quick Start
 
@@ -73,11 +115,12 @@ python3 scripts/setup_skill.py \
 
 The setup command:
 
-1. Installs a clean skill copy at `~/.codex/skills/linkedin-job-search-pipeline`.
-2. Creates the campaign workspace outside the installed skill.
-3. Copies base resumes into the private workspace.
-4. Records each imported filename and SHA-256 hash.
-5. Refuses to overwrite existing installations, workspaces, or resumes.
+1. Installs the primary skill at `~/.codex/skills/linkedin-job-search-pipeline`.
+2. Installs the orchestrator at `~/.codex/skills/target-company-job-campaign`.
+3. Creates the campaign workspace outside both installed skills.
+4. Copies base resumes into the private workspace.
+5. Records each imported filename and SHA-256 hash.
+6. Refuses to overwrite existing installations, workspaces, or resumes.
 
 Set `CODEX_HOME` or pass `--codex-home /custom/path` when Codex uses a non-default home directory.
 
@@ -90,6 +133,24 @@ Use $linkedin-job-search-pipeline to initialize my candidate profile from the ba
 ```
 
 Then provide the workspace path printed by setup. Resolve any conflicting dates, titles, institutions, scope, or metrics before dependent tailoring or applications.
+
+For the complete focused workflow, start a new Codex task and enter:
+
+```text
+Use $target-company-job-campaign with my existing workspace at /path/to/job-search-campaign. Recommend a small batch of companies and take the campaign to the next approval checkpoint.
+```
+
+Or provide the companies directly:
+
+```text
+Use $target-company-job-campaign with my existing workspace at /path/to/job-search-campaign. Target Waymo, Apple, and NVIDIA. Find fitting fresh roles and prepare the role-selection checkpoint.
+```
+
+After approval, continue in the same task. The skill retains the batch manifest and shared trackers, so you can also resume later:
+
+```text
+Resume my active $target-company-job-campaign batch from /path/to/job-search-campaign and continue to the next required checkpoint.
+```
 
 ## Campaign Workflow
 
@@ -161,7 +222,13 @@ linkedin-job-search-pipeline/
 │   ├── deduplicate_jobs.py
 │   ├── resume_generator.py
 │   ├── resume_qa.py
+│   ├── target_campaign.py
 │   └── reporting.py
+├── skills/
+│   └── target-company-job-campaign/
+│       ├── SKILL.md
+│       ├── agents/openai.yaml
+│       └── references/campaign-workflow.md
 ├── tests/
 └── docs/plans/
 ```
@@ -197,6 +264,7 @@ python3 scripts/deduplicate_jobs.py --help
 python3 scripts/resume_generator.py --help
 python3 scripts/resume_qa.py --help
 python3 scripts/reporting.py --help
+python3 scripts/target_campaign.py --help
 ```
 
 ## Validation

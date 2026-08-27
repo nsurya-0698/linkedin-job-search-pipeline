@@ -1,0 +1,5 @@
+interface:
+  display_name: "Target Company Job Campaign"
+  short_description: "Run a focused 2–3 company job campaign"
+  brand_color: "#0A66C2"
+  default_prompt: "Use $target-company-job-campaign with my existing private job-search workspace to target 2–3 companies, find suitable roles, and prepare the next approval checkpoint."

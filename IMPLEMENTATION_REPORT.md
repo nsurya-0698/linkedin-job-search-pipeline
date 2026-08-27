@@ -4,7 +4,7 @@
 
 `linkedin-job-search-pipeline` is a reusable Codex/ChatGPT skill for a focused LinkedIn Premium job-search campaign. It keeps candidate claims evidence-backed, separates relevance eligibility from opportunity priority, persists local campaign state, prepares ATS resumes and outreach, and requires user approval before any external message or application submission.
 
-The installed skill is immutable. Personal profiles, source resumes, job descriptions, contacts, applications, reports, and tailored resumes live in a separate campaign workspace that is ignored by Git by default.
+Both installed skills are immutable. Personal profiles, source resumes, job descriptions, contacts, applications, reports, and tailored resumes live in a shared external campaign workspace that is ignored by Git by default.
 
 ## Files and Architecture
 
@@ -14,7 +14,8 @@ The package contains:
 - `README.md`: portable clone, prerequisite, setup, upgrade, privacy, and usage guide.
 - `agents/openai.yaml`: skill-list metadata and default invocation prompt.
 - `references/`: scoring, resume, networking, sponsorship, application, interview, metrics, search methodology, and opt-in repository-owner search preferences.
-- `scripts/`: the six required workflow CLIs, a portable setup CLI, and a shared schema and atomic-I/O module.
+- `scripts/`: the workflow CLIs, a focused target-campaign lifecycle CLI, a portable dual-skill setup CLI, and a shared schema and atomic-I/O module.
+- `skills/target-company-job-campaign/`: a separately selectable orchestrator for focused two-to-three-company campaigns.
 - `assets/workspace-template/`: sanitized campaign metadata, candidate/search templates, tracker schemas, resume input example, interview tracker, report folder, and fail-closed runtime `.gitignore`.
 - `tests/`: offline fixtures and integration tests covering initialization, tracking, gates, deduplication, reporting, truthful/versioned PDF generation, and QA.
 - `requirements.txt`: Python PDF dependencies.
@@ -54,7 +55,9 @@ python3 scripts/resume_qa.py --help
 python3 scripts/reporting.py --workspace /path/to/new-campaign --format markdown
 ```
 
-`setup_skill.py` validates a clone, checks Python and Poppler prerequisites, installs a clean skill copy under the selected Codex home, initializes a separate fail-closed campaign workspace, imports one or more base resumes with SHA-256 metadata, and refuses to overwrite existing state. Recognized installations can be updated explicitly while preserving a timestamped backup.
+`setup_skill.py` validates a clone, checks Python and Poppler prerequisites, installs both the primary pipeline and target-company orchestrator under the selected Codex home, initializes a separate fail-closed campaign workspace, imports one or more base resumes with SHA-256 metadata, and refuses to overwrite existing state. Recognized installations can be updated explicitly while preserving timestamped backups.
+
+`target_campaign.py` creates a non-overwriting, dated two-to-three-company batch beneath the private workspace. It records ordered lifecycle changes and exact approval scopes for role selection, resume acceptance, application submission, and outreach without treating the manifest itself as authorization.
 
 `job_tracker.py` supports adding/updating jobs, evaluating hard gates, creating one canonical application, validating application-state transitions, and listing state as JSON. Deduplication is read-only unless `--apply` is given. Generators and report outputs refuse to overwrite existing artifacts.
 

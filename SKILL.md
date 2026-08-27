@@ -76,10 +76,14 @@ Run each script with `--help` before using an unfamiliar mode.
 - `job_tracker.py`: add or update normalized job records and application states with validation and atomic writes.
 - `deduplicate_jobs.py`: identify canonical records and preserve duplicate-source evidence.
 - `resume_generator.py`: render an ATS-friendly PDF from structured, source-backed resume data; it does not invent or rewrite claims.
+- `reference_resume_renderer.py`: create the final two-page portal PDF in the required dated company/job folder using the approved reference-matched layout.
 - `resume_qa.py`: inspect PDF metadata, extracted text, and rendered pages; treat a failed check as a blocker.
 - `reporting.py`: produce funnel metrics, due-item summaries, ranked queues, and bottleneck signals from campaign state.
+- `target_campaign.py`: create and audit a focused two-to-three-company batch in the shared private workspace.
 
 Keep external reads separate from external writes. Local tracker updates are preparation work; LinkedIn messages and job applications are execution work.
+
+For a single selectable workflow that coordinates company selection, role research, resume checkpoints, applications, and recruiter-first outreach across two or three companies, use the separately installed companion skill `$target-company-job-campaign`. It reuses this skill and the same private workspace; it does not duplicate candidate data.
 
 ## Present Decisions Transparently
 
@@ -96,6 +100,17 @@ For each processed job, report:
 - recommended resume version and next action
 
 Do not generate a resume for a rejected, stale, duplicate, or unapproved role.
+
+## Owner Resume Standard
+
+For confirmed repository owner Surya Teja Nammi, treat `assets/reference/SuryaResume-reference.pdf` as the required visual and structural reference for every newly created resume. Read [references/resume-tailoring.md](references/resume-tailoring.md) before generating it.
+
+- Require a job-specific professional summary; never omit it.
+- Produce exactly two substantially filled pages. Do not shrink below readable body text or pad with unsupported content.
+- Preserve the reference's section order, date treatment, role/company/location hierarchy, bullet styling, and education format.
+- Tailor the professional summary, skill emphasis, and experience bullet selection, ordering, and evidence-supported wording substantially to the posting. Do not change immutable facts.
+- Store the upload artifact as `YYYY-MM-DD/<company>/<job-id>-<role>/SuryaResume.pdf`; job identity belongs in folders and metadata, never in the upload filename.
+- Preserve clickable links labeled `LinkedIn` and `Portfolio`, plus verified certification links. Do not show a GitHub contact link unless the owner asks for it.
 
 ## Close Each Major Session
 

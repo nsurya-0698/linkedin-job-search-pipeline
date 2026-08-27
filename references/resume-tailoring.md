@@ -10,7 +10,7 @@ Tailor only after the job is active, deduplicated, hard-gate eligible, at least 
 - Create a new version only for meaningful job-specific changes.
 - Never overwrite a tailored version.
 
-Use a stable filename such as `company-role-jobid-v1.pdf`, with lowercase filesystem-safe tokens. Increment the version only when content meaningfully changes.
+For ordinary candidates, use a stable versioned filename such as `company-role-jobid-v1.pdf`. For confirmed repository owner Surya Teja Nammi, the portal upload filename is always `SuryaResume.pdf`; identify the application through `YYYY-MM-DD/<company>/<job-id>-<role>/` folders and metadata. Never overwrite a prior application folder silently.
 
 ## Build a Tailoring Plan
 
@@ -26,6 +26,8 @@ Identify the five to ten most important JD requirements. For each proposed edit 
 | Risk | Ambiguity, metric, date, title, or technology that needs confirmation |
 
 Allowed changes include reordering existing bullets, choosing the most relevant supported bullets, clarifying wording without changing meaning, adjusting summary emphasis, and reordering documented skills.
+
+For the repository owner, tailoring must be meaningful rather than a superficial reorder. Rewrite the professional summary for the role, reorder and select supported skills, and revise or reorder enough evidence-backed bullets to foreground the JD's highest-value responsibilities. Preserve employer, title, location, dates, degree, certification, and other immutable facts.
 
 Do not add projects, technologies, responsibilities, metrics, certifications, dates, titles, seniority, leadership, or accomplishments without source evidence. Do not transform exposure into production ownership or adjacent experience into direct expertise. Do not keyword-stuff.
 
@@ -47,6 +49,15 @@ Keep personal fields out of logs and public fixtures. Do not include a photo, co
 ## PDF Requirements
 
 Produce a selectable-text, letter-size PDF with consistent typography, clear headings, readable bullets, predictable margins, and no unnecessary decoration. Prefer one or two pages according to the candidate's evidence; never shrink text to conceal poor prioritization.
+
+For confirmed repository owner Surya Teja Nammi:
+
+1. inspect `assets/reference/SuryaResume-reference.pdf` before authoring;
+2. require `PROFESSIONAL SUMMARY`, `TECHNICAL SKILLS`, `CERTIFICATIONS`, `PROFESSIONAL EXPERIENCE`, and `EDUCATION` in that order;
+3. produce exactly two balanced pages with both pages substantially filled;
+4. preserve right-aligned dates, a separate italic company/location line, black single-column typography, and reference-like spacing;
+5. keep body text at least 10 pt and do not fabricate filler;
+6. create the dated company/job folder with `scripts/reference_resume_renderer.py` and name the portal file `SuryaResume.pdf`.
 
 Before delivery:
 

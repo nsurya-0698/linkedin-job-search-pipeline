@@ -164,7 +164,7 @@ class HelpAndWorkspaceTests(PipelineTestCase):
         self.assertIn("do not invent or imply an Oracle team", networking)
 
     def test_every_required_cli_has_help(self) -> None:
-        for script in (
+        scripts = [
             "setup_skill.py",
             "workspace_init.py",
             "job_tracker.py",
@@ -172,10 +172,55 @@ class HelpAndWorkspaceTests(PipelineTestCase):
             "resume_generator.py",
             "resume_qa.py",
             "reporting.py",
-        ):
+            "target_campaign.py",
+        ]
+        if PDF_DEPS:
+            scripts.append("reference_resume_renderer.py")
+        for script in scripts:
             with self.subTest(script=script):
                 completed = self.run_script(script, "--help")
                 self.assertIn("usage:", completed.stdout.lower())
+
+    @unittest.skipUnless(PDF_DEPS, "PDF dependencies are unavailable")
+    def test_reference_renderer_uses_dated_folder_stable_name_and_two_pages(self) -> None:
+        source = json.loads((FIXTURES / "resume_source.json").read_text(encoding="utf-8"))
+        source["candidate"]["links"] = {
+            "linkedin": "https://www.linkedin.com/in/casey-example/",
+            "portfolio": "https://casey.example.test/",
+        }
+        source["experience"] = [
+            {**source["experience"][0], "company": f"Example {index}"}
+            for index in range(1, 4)
+        ]
+        source["page_break_after_experience"] = 2
+        source_path = self.temp / "source.json"
+        source_path.write_text(json.dumps(source), encoding="utf-8")
+        output_root = self.temp / "resumes"
+        completed = self.run_script(
+            "reference_resume_renderer.py",
+            "--source", source_path,
+            "--output-root", output_root,
+            "--date", "2026-08-25",
+            "--company", "Example Corp",
+            "--job-id", "REQ-101",
+            "--role", "Software Engineer",
+        )
+        metadata = json.loads(completed.stdout)
+        pdf = Path(metadata["pdf"])
+        self.assertEqual(pdf.name, "SuryaResume.pdf")
+        self.assertIn("2026-08-25/example-corp/req-101-software-engineer", pdf.as_posix())
+        self.assertEqual(len(__import__("pypdf").PdfReader(pdf).pages), 2)
+        second = self.run_script(
+            "reference_resume_renderer.py",
+            "--source", source_path,
+            "--output-root", output_root,
+            "--date", "2026-08-25",
+            "--company", "Example Corp",
+            "--job-id", "REQ-101",
+            "--role", "Software Engineer",
+            expected=1,
+        )
+        self.assertIn("Refusing to overwrite", second.stderr)
 
     def test_workspace_is_external_sanitized_private_and_no_overwrite(self) -> None:
         template = SKILL_ROOT / "assets" / "workspace-template"
@@ -267,10 +312,24 @@ class HelpAndWorkspaceTests(PipelineTestCase):
         self.assertTrue((installed / "SKILL.md").is_file())
         self.assertTrue((installed / "agents" / "openai.yaml").is_file())
         self.assertTrue((installed / "scripts" / "setup_skill.py").is_file())
+        self.assertTrue((installed / "scripts" / "target_campaign.py").is_file())
         self.assertTrue((installed / ".portable-install.json").is_file())
         self.assertFalse((installed / ".git").exists())
         self.assertFalse((installed / "tests").exists())
         self.assertFalse((installed / "README.md").exists())
+
+        target_skill = (codex_home / "skills" / "target-company-job-campaign").resolve()
+        self.assertEqual(
+            Path(result["installed_target_company_skill"]).resolve(), target_skill
+        )
+        self.assertTrue((target_skill / "SKILL.md").is_file())
+        self.assertTrue((target_skill / "agents" / "openai.yaml").is_file())
+        self.assertTrue((target_skill / "references" / "campaign-workflow.md").is_file())
+        target_marker = json.loads(
+            (target_skill / ".portable-install.json").read_text(encoding="utf-8")
+        )
+        self.assertEqual(target_marker["skill_name"], "target-company-job-campaign")
+        self.assertEqual(target_marker["companion_skill"], "linkedin-job-search-pipeline")
 
         stored_resume = workspace / "data" / "resumes" / "base" / resume.name
         self.assertEqual(stored_resume.read_bytes(), resume.read_bytes())
@@ -325,10 +384,110 @@ class HelpAndWorkspaceTests(PipelineTestCase):
         )
         installed = (codex_home / "skills" / "linkedin-job-search-pipeline").resolve()
         backup = Path(result["backup"]).resolve()
+        target_installed = (codex_home / "skills" / "target-company-job-campaign").resolve()
+        target_backup = Path(result["target_company_backup"]).resolve()
         self.assertTrue(installed.is_dir())
         self.assertTrue(backup.is_dir())
+        self.assertTrue(target_installed.is_dir())
+        self.assertTrue(target_backup.is_dir())
         self.assertTrue((backup / ".portable-install.json").is_file())
         self.assertNotEqual(installed, backup)
+
+    def test_target_campaign_requires_two_or_three_unique_companies(self) -> None:
+        workspace = self.init_workspace()
+        one = self.run_script(
+            "target_campaign.py",
+            "create",
+            "--workspace",
+            workspace,
+            "--company",
+            "Waymo",
+            expected=2,
+        )
+        self.assertIn("exactly 2 or 3", one.stderr)
+
+        four = self.run_script(
+            "target_campaign.py",
+            "create",
+            "--workspace",
+            workspace,
+            "--company",
+            "Waymo",
+            "--company",
+            "Apple",
+            "--company",
+            "Google",
+            "--company",
+            "Microsoft",
+            expected=2,
+        )
+        self.assertIn("exactly 2 or 3", four.stderr)
+
+    def test_target_campaign_creates_private_batch_and_preserves_approval_scope(self) -> None:
+        workspace = self.init_workspace()
+        created = json.loads(
+            self.run_script(
+                "target_campaign.py",
+                "create",
+                "--workspace",
+                workspace,
+                "--batch-id",
+                "ai-platform-batch",
+                "--company",
+                "Waymo",
+                "--company",
+                "Apple",
+            ).stdout
+        )
+        self.assertEqual(created["companies"], ["Waymo", "Apple"])
+        self.assertEqual(created["phase"], "RESEARCH")
+        batch = workspace / "data" / "target-campaigns" / "ai-platform-batch"
+        for child in ("research", "decisions", "resumes", "applications", "outreach", "reports"):
+            self.assertTrue((batch / child).is_dir())
+
+        self.run_script(
+            "target_campaign.py",
+            "set-phase",
+            "--workspace",
+            workspace,
+            "--batch-id",
+            "ai-platform-batch",
+            "--phase",
+            "AWAITING_ROLE_APPROVAL",
+        )
+        approved = json.loads(
+            self.run_script(
+                "target_campaign.py",
+                "approve",
+                "--workspace",
+                workspace,
+                "--batch-id",
+                "ai-platform-batch",
+                "--checkpoint",
+                "ROLES",
+                "--scope",
+                "Waymo 4702; Apple 200677022",
+            ).stdout
+        )
+        self.assertEqual(approved["approvals"][0]["checkpoint"], "ROLES")
+        self.assertEqual(
+            approved["approvals"][0]["scope"], "Waymo 4702; Apple 200677022"
+        )
+
+        duplicate = self.run_script(
+            "target_campaign.py",
+            "create",
+            "--workspace",
+            workspace,
+            "--batch-id",
+            "ai-platform-batch",
+            "--company",
+            "Waymo",
+            "--company",
+            "Apple",
+            expected=2,
+        )
+        self.assertIn("Refusing to overwrite", duplicate.stderr)
 
     def test_portable_check_reports_missing_poppler_without_writes(self) -> None:
         completed = self.run_script(

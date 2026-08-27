@@ -19,8 +19,10 @@ from workspace_init import initialize_workspace
 
 
 SKILL_NAME = "linkedin-job-search-pipeline"
+SECONDARY_SKILL_NAME = "target-company-job-campaign"
 SCRIPT_PATH = Path(__file__).resolve()
 SOURCE_ROOT = SCRIPT_PATH.parent.parent
+SECONDARY_SOURCE_ROOT = SOURCE_ROOT / "skills" / SECONDARY_SKILL_NAME
 INSTALL_MARKER = ".portable-install.json"
 SUPPORTED_RESUME_SUFFIXES = {".docx", ".json", ".md", ".pdf", ".txt"}
 PYTHON_DEPENDENCIES = ("reportlab", "pdfplumber")
@@ -45,6 +47,7 @@ REQUIRED_SOURCE_PATHS = (
     "scripts/resume_generator.py",
     "scripts/resume_qa.py",
     "scripts/setup_skill.py",
+    "scripts/target_campaign.py",
     "scripts/workspace_init.py",
 )
 
@@ -111,6 +114,23 @@ def validate_source(source_root: Path) -> None:
         raise PipelineError(f"SKILL.md does not declare name: {SKILL_NAME}")
 
 
+def validate_secondary_source(source_root: Path) -> None:
+    required = (
+        source_root / "SKILL.md",
+        source_root / "agents" / "openai.yaml",
+        source_root / "references" / "campaign-workflow.md",
+    )
+    missing = [str(path) for path in required if not path.is_file()]
+    if missing:
+        raise PipelineError("Secondary skill source is incomplete: " + ", ".join(missing))
+    frontmatter = (source_root / "SKILL.md").read_text(encoding="utf-8")
+    sections = frontmatter.split("---", 2)
+    if len(sections) < 3 or f"name: {SECONDARY_SKILL_NAME}" not in sections[1]:
+        raise PipelineError(
+            f"Secondary SKILL.md does not declare name: {SECONDARY_SKILL_NAME}"
+        )
+
+
 def dependency_status() -> dict[str, object]:
     missing_python = [
         package for package in PYTHON_DEPENDENCIES if importlib.util.find_spec(package) is None
@@ -166,7 +186,7 @@ def _resume_sources(values: list[Path]) -> list[Path]:
     return sources
 
 
-def _validate_existing_install(destination: Path) -> None:
+def _validate_existing_install(destination: Path, skill_name: str = SKILL_NAME) -> None:
     if destination.is_symlink():
         raise PipelineError(f"Refusing to update a symlinked installation: {destination}")
     marker = destination / INSTALL_MARKER
@@ -178,8 +198,38 @@ def _validate_existing_install(destination: Path) -> None:
         metadata = json.loads(marker.read_text(encoding="utf-8"))
     except (OSError, json.JSONDecodeError) as exc:
         raise PipelineError(f"Installed-skill marker is invalid: {marker}") from exc
-    if metadata.get("skill_name") != SKILL_NAME:
+    if metadata.get("skill_name") != skill_name:
         raise PipelineError(f"Installed-skill marker belongs to another skill: {marker}")
+
+
+def _stage_secondary_install(source_root: Path, destination: Path) -> Path:
+    validate_secondary_source(source_root)
+    destination.parent.mkdir(parents=True, exist_ok=True)
+    staging = Path(
+        tempfile.mkdtemp(prefix=f".{SECONDARY_SKILL_NAME}.install-", dir=destination.parent)
+    )
+    try:
+        for name in ("SKILL.md", "agents", "references"):
+            source = source_root / name
+            target = staging / name
+            if source.is_dir():
+                shutil.copytree(source, target, copy_function=shutil.copy2)
+            else:
+                shutil.copy2(source, target)
+        marker = {
+            "installed_at": utc_now(),
+            "installer_schema": 1,
+            "skill_name": SECONDARY_SKILL_NAME,
+            "source_digest": _source_digest(source_root),
+            "companion_skill": SKILL_NAME,
+        }
+        (staging / INSTALL_MARKER).write_text(
+            json.dumps(marker, indent=2, sort_keys=True) + "\n", encoding="utf-8"
+        )
+        return staging
+    except Exception:
+        shutil.rmtree(staging, ignore_errors=True)
+        raise
 
 
 def _stage_install(source_root: Path, destination: Path) -> Path:
@@ -266,12 +316,14 @@ def _stage_workspace(
         raise
 
 
-def _install_staged(staging: Path, destination: Path, update: bool) -> Path | None:
+def _install_staged(
+    staging: Path, destination: Path, update: bool, skill_name: str = SKILL_NAME
+) -> Path | None:
     backup: Path | None = None
     if destination.exists():
         if not update:
             raise PipelineError(f"Refusing to overwrite installed skill: {destination}")
-        _validate_existing_install(destination)
+        _validate_existing_install(destination, skill_name)
         timestamp = datetime.now(timezone.utc).strftime("%Y%m%dT%H%M%SZ")
         backup = destination.parent / f"{destination.name}.backup-{timestamp}"
         if backup.exists():
@@ -289,8 +341,9 @@ def _install_staged(staging: Path, destination: Path, update: bool) -> Path | No
 def build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(
         description=(
-            "Install linkedin-job-search-pipeline into Codex and initialize a separate, "
-            "private campaign workspace. Existing data is never overwritten."
+            "Install linkedin-job-search-pipeline and target-company-job-campaign into "
+            "Codex and initialize a separate, private campaign workspace. Existing data "
+            "is never overwritten."
         )
     )
     parser.add_argument(
@@ -337,6 +390,7 @@ def main(argv: list[str] | None = None) -> int:
     try:
         source_root = SOURCE_ROOT.resolve()
         validate_source(source_root)
+        validate_secondary_source(SECONDARY_SOURCE_ROOT)
         status = dependency_status()
         if args.check_only:
             print(json.dumps({"dependencies": status, "source_valid": True}, indent=2))
@@ -361,15 +415,24 @@ def main(argv: list[str] | None = None) -> int:
 
         codex_home = args.codex_home.expanduser().resolve()
         install_destination = codex_home / "skills" / SKILL_NAME
+        secondary_destination = codex_home / "skills" / SECONDARY_SKILL_NAME
         workspace = args.workspace.expanduser().resolve() if args.workspace else None
         if install_destination == source_root or _is_relative_to(
             install_destination, source_root
         ):
             raise PipelineError("Installed skill destination must be outside this clone")
+        if secondary_destination == source_root or _is_relative_to(
+            secondary_destination, source_root
+        ):
+            raise PipelineError("Secondary installed skill destination must be outside this clone")
         if install_destination.exists() and not args.update:
             raise PipelineError(f"Refusing to overwrite installed skill: {install_destination}")
+        if secondary_destination.exists() and not args.update:
+            raise PipelineError(f"Refusing to overwrite installed skill: {secondary_destination}")
         if args.update and install_destination.exists():
             _validate_existing_install(install_destination)
+        if args.update and secondary_destination.exists():
+            _validate_existing_install(secondary_destination, SECONDARY_SKILL_NAME)
         if workspace is not None:
             if workspace.exists():
                 raise PipelineError(f"Refusing to overwrite existing workspace: {workspace}")
@@ -380,6 +443,9 @@ def main(argv: list[str] | None = None) -> int:
 
         resumes = _resume_sources(args.resume)
         install_staging = _stage_install(source_root, install_destination)
+        secondary_staging = _stage_secondary_install(
+            SECONDARY_SOURCE_ROOT, secondary_destination
+        )
         workspace_staging: Path | None = None
         imported: list[dict[str, str]] = []
         try:
@@ -392,6 +458,13 @@ def main(argv: list[str] | None = None) -> int:
                 )
             backup = _install_staged(install_staging, install_destination, args.update)
             install_staging = None
+            secondary_backup = _install_staged(
+                secondary_staging,
+                secondary_destination,
+                args.update,
+                SECONDARY_SKILL_NAME,
+            )
+            secondary_staging = None
             if workspace is not None and workspace_staging is not None:
                 if workspace.exists():
                     raise PipelineError(f"Workspace destination appeared during setup: {workspace}")
@@ -400,6 +473,8 @@ def main(argv: list[str] | None = None) -> int:
         finally:
             if install_staging is not None:
                 shutil.rmtree(install_staging, ignore_errors=True)
+            if secondary_staging is not None:
+                shutil.rmtree(secondary_staging, ignore_errors=True)
             if workspace_staging is not None:
                 shutil.rmtree(workspace_staging, ignore_errors=True)
 
@@ -407,6 +482,8 @@ def main(argv: list[str] | None = None) -> int:
             "backup": str(backup) if backup else None,
             "dependencies": status,
             "installed_skill": str(install_destination),
+            "installed_target_company_skill": str(secondary_destination),
+            "target_company_backup": str(secondary_backup) if secondary_backup else None,
             "resume_count": len(imported),
             "stored_resumes": [item["stored_filename"] for item in imported],
             "workspace": str(workspace) if workspace else None,
